@@ -4,6 +4,8 @@ import { auth } from "../firebaseConfig";
 
 import router from "../router";
 
+import {useDatabaseStore} from './database'
+
 export const useUserStore = defineStore("userStore", {
     state: () => ({
         userData: null,
@@ -37,6 +39,8 @@ export const useUserStore = defineStore("userStore", {
             }
         },
         async logoutUser () {
+            const databaseStore = useDatabaseStore(); //debe estar dentro de la función
+            databaseStore.$reset();
             try {
                 await signOut(auth);
                 this.userData = null;
