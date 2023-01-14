@@ -3,11 +3,13 @@ import {defineStore} from 'pinia'
 import { auth, db } from '../firebaseConfig'
 import { nanoid } from 'nanoid' 
 import router from '../router'
+import { message } from 'ant-design-vue'
 
 export const useDatabaseStore = defineStore('database', {
     state: () => ({
         documents: [], //aqui se trae todo de la base de datos
-        loadingDoc: false
+        loadingDoc: false,
+        loading: false
     }),
     actions: {
         async getUrls(){ //funcion para traer información de la base de datos de firestore
@@ -32,6 +34,7 @@ export const useDatabaseStore = defineStore('database', {
             }
         },
         async addUrl(name){
+            this.loading = true;
             try {
                 const objetoDoc = {
                     name: name, //viene de la vista, la url ingresada por el usuario
@@ -45,12 +48,14 @@ export const useDatabaseStore = defineStore('database', {
                     id: docRef.id
                 })
             } catch (error) {
-                
+                console.log(error.code)
+                return error.code
             } finally {
-
+                this.loading = false;
             }
         },
         async deleteUrl(id){
+            this.loading = true;
             try {
                 const docRef = doc(db, 'urls', id);
                 
@@ -66,9 +71,10 @@ export const useDatabaseStore = defineStore('database', {
                 await deleteDoc(docRef);
                 this.documents = this.documents.filter(item => item.id !== id) //filter para eliminar || devuelve todo cuando el item.id coincida con el id que pasamos
             } catch (error) {
-                console.log(error)
+                //console.log(error.code)
+                return error.message
             } finally {
-
+                this.loading = false;
             }
         },
         async readurl(id){
@@ -88,6 +94,7 @@ export const useDatabaseStore = defineStore('database', {
             }
         },
         async update(id, name){
+            this.loading = true;
             try {
                 const docRef = doc(db, 'urls', id);
                 const docSnap = await getDoc(docRef);
@@ -103,9 +110,10 @@ export const useDatabaseStore = defineStore('database', {
                 this.documents = this.documents.map(item => item.id === id ? ({...item, name: name}) : item) //map devuelve la misma cantidad de elementos
                 router.push('/');
             } catch (error) {
-                console.log(error)
+                console.log(error.message)
+                return error.message;
             } finally {
-
+                this.loading = false;
             }
         }
     }
