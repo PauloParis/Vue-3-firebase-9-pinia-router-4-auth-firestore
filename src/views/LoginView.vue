@@ -72,7 +72,7 @@ const handleSubmit = async() => {
 
 //si No hay error en el login
 const onFinish = async (values) => {
-      console.log('Success:', values);
+      /* console.log('Success:', values); */
       const error = await userStore.loginUser(formState.email, formState.password);
 
       if(!error) return message.success('Bienvenido a la super app')

@@ -12,6 +12,9 @@
         <a-menu-item key="home" v-if="userStore.userData">
           <RouterLink to="/">Home</RouterLink> 
         </a-menu-item>
+        <a-menu-item key="perfil" v-if="userStore.userData">
+          <RouterLink to="/perfil">Perfil</RouterLink> 
+        </a-menu-item>
         <a-menu-item key="login" v-if="!userStore.userData">
           <RouterLink to="/login">Login</RouterLink> 
         </a-menu-item>

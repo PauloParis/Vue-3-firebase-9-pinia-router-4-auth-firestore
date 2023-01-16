@@ -2,11 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import {useUserStore} from '@/stores/user.js'
 
+//Middleware
 const requireAuth = async(to, from, next) => {
   const userStore = useUserStore(); //debe estar dentro de la función, está en la documentación
-  
   userStore.loadingSession = true;
-
   const user = await userStore.currentUser(); //aqui verifico si la sesión está activa
   if(user) {
     next();
@@ -16,6 +15,7 @@ const requireAuth = async(to, from, next) => {
   }
   userStore.loadingSession = false;
 }
+/////////////////////////////////////////////////
 
 
 const router = createRouter({
@@ -40,6 +40,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: () => import('../views/RegisterView.vue')
+    },
+    {
+      path: '/perfil',
+      name: 'perfil',
+      component: () => import('../views/PerfilView.vue'), beforeEnter: requireAuth
     }
   ]
 })
