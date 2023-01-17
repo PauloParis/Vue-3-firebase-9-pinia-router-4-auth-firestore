@@ -31,7 +31,13 @@
               >
               <a-button danger :loading="databaseStore.loading" :disabled="databaseStore.loading">Eliminar</a-button>
             </a-popconfirm>
-            <a-button type="primary" @click="router.push(`/edit/${item.id}`)">Editar</a-button>
+            <a-button 
+              type="primary" 
+              @click="router.push(`/edit/${item.id}`)"
+              >
+              Editar
+            </a-button>
+            <a-button @click="copiarPortapapeles(item.id)">Copiar</a-button>
           </a-space>
         </template>
         <p>{{ item.name }}</p>
@@ -82,6 +88,30 @@ const confirm = async(id) => {
 }
 const cancel = () => {
   message.error('No se eliminó')
+}
+
+const copiarPortapapeles = async(id) => {
+  const path = `${window.location.origin}/${id}`
+
+
+  //con async await
+  const err = await navigator.clipboard.writeText(path);
+  if(err) {
+    message.error("no fue posible copiar al polrtapapeles" + err);
+  }
+  else {
+    message.success("Se copio con exito")
+  }
+
+  //con then y catch
+  /* navigator.clipboard
+    .writeText(path)
+    .then(()=> {
+      message.success("Se copio con exito")
+    })
+    .catch((error) => {
+      message.error("no fue posible copiar al polrtapapeles" + error);
+    }) */
 }
 
 </script>

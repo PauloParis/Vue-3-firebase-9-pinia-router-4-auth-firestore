@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import {useUserStore} from '@/stores/user.js'
+import { useDatabaseStore } from '../stores/database'
 
 //Middleware
 const requireAuth = async(to, from, next) => {
@@ -14,6 +15,26 @@ const requireAuth = async(to, from, next) => {
     next('/login');
   }
   userStore.loadingSession = false;
+}
+
+//Middleware para rediccionamiento
+const redireccion = async(to, from, next) => {
+  const databaseStore = useDatabaseStore();
+
+  const userStore = useUserStore();
+  userStore.loadingSession = true;
+
+  //console.log(to.params.pathMatch[0]);
+  const name = await databaseStore.getURL(to.params.pathMatch[0])
+  if(!name) {
+    next(); //manda al 404
+    userStore.loadingSession = false;
+  } else {
+    window.location.href = name;
+    userStore.loadingSession = true;
+    next();
+  }
+  
 }
 /////////////////////////////////////////////////
 
@@ -45,6 +66,11 @@ const router = createRouter({
       path: '/perfil',
       name: 'perfil',
       component: () => import('../views/PerfilView.vue'), beforeEnter: requireAuth
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: () => import('../views/NotFoundView.vue'), beforeEnter: redireccion
     }
   ]
 })

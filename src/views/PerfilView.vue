@@ -102,19 +102,19 @@ const handleChange = (info) => {
 }
 
 const onFinish = async() => {
-    const error = await userStore.updateUser(userStore.userData.displayName);
+    const error = await userStore.updateUser(userStore.userData.displayName, fileList.value[0]);
 
     //para subir imagen, si son varias
     /* fileList.value.forEach(file => {
         console.log(file)
     }) */
-    if(fileList.value[0]){ // si solo es una imagen
+    /* if(fileList.value[0]){ // si solo es una imagen
         const error = await userStore.updateImg(fileList.value[0]); //actualziar imagen si existe
         if(error) {
             return message.success('Problemas al subir tu imagen')
         }
         message.success('Se actualizó tu imagen')
-    }
+    } */
     if(!error) {
         return message.success('Se actualizó tu nick name')
     }

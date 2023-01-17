@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore/lite'
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore/lite'
 import {defineStore} from 'pinia'
 import { auth, db } from '../firebaseConfig'
 import { nanoid } from 'nanoid' 
@@ -12,6 +12,24 @@ export const useDatabaseStore = defineStore('database', {
         loading: false
     }),
     actions: {
+        async getURL(id){
+            try {
+                const docRef = doc(db, 'urls', id);
+                const docSnap = await getDoc(docRef);
+
+                //lo mismo que el delete
+                if(!docSnap.exists()) return false; //exists es un metodo de firebase
+                
+
+                return docSnap.data().name //devuelve la url larga, el name
+            } catch (error) {
+                console.log(error)
+                return false
+            } finally {
+
+            }
+        },
+
         async getUrls(){ //funcion para traer información de la base de datos de firestore
             
             if(this.documents.length !==0) return; //para vaciar el documents
@@ -41,11 +59,13 @@ export const useDatabaseStore = defineStore('database', {
                     short: nanoid(6), //nanoid genera un string aleatorio, en este caso de 6 caracteres
                     user: auth.currentUser.uid //el usuario activo
                 }
-                const docRef = await addDoc(collection(db, "urls"), objetoDoc) //docRef trae el id del documento, pero no la información
+                //const docRef = await addDoc(collection(db, "urls"), objetoDoc) //docRef trae el id del documento, pero no la información
+                /* const docRef =  */await setDoc(doc(db, "urls", objetoDoc.short), objetoDoc) //id de la url, y no del usuario | como en la linea de arriba 
                 //console.log(docRef.id)
                 this.documents.push({
                     ...objetoDoc,
-                    id: docRef.id
+                    //id: docRef.id
+                    id: objetoDoc.short
                 })
             } catch (error) {
                 console.log(error.code)
